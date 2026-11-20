@@ -1,0 +1,89 @@
+{
+  "name": "payments",
+  "endpoints": [
+    {
+      "method": "POST",
+      "path": "/payments",
+      "policy": "random",
+      "responses": [
+        {
+          "name": "success",
+          "status": 200,
+          "weight": 70,
+          "body": {
+            "id": "pay_123",
+            "status": "approved"
+          }
+        },
+        {
+          "name": "server-error",
+          "status": 500,
+          "weight": 20,
+          "body": {
+            "error": "provider unavailable"
+          }
+        },
+        {
+          "name": "slow-success",
+          "status": 200,
+          "weight": 10,
+          "delay": 10000,
+          "body": {
+            "id": "pay_123",
+            "status": "approved"
+          }
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/payments/{id}",
+      "responses": [
+        {
+          "name": "paid",
+          "status": 200,
+          "body": {
+            "id": "pay_123",
+            "status": "paid"
+          }
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/refunds",
+      "policy": "sequence",
+      "responses": [
+        {
+          "name": "first-failure",
+          "status": 500,
+          "body": {
+            "error": "temporary failure"
+          }
+        },
+        {
+          "name": "second-failure",
+          "status": 500,
+          "body": {
+            "error": "temporary failure"
+          }
+        },
+        {
+          "name": "slow-success",
+          "status": 200,
+          "delay": 400,
+          "body": {
+            "status": "refunded"
+          }
+        },
+        {
+          "name": "recovered",
+          "status": 200,
+          "body": {
+            "status": "refunded"
+          }
+        }
+      ]
+    }
+  ]
+}
